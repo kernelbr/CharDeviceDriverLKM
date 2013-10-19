@@ -51,6 +51,8 @@ static int cdd_release(struct inode *inode, struct file *f)
 
 static ssize_t cdd_read(struct file *f, char *buf, size_t len, loff_t *off)
 {
+	printk(KERN_INFO "cdd: reading from device\n");
+
 	put_user(byte, buf);
 	if (!*off)	return *off += 1;
 	else		return 0;
@@ -58,6 +60,8 @@ static ssize_t cdd_read(struct file *f, char *buf, size_t len, loff_t *off)
 
 static ssize_t cdd_write(struct file *f, const char *buf, size_t len, loff_t *off)
 {
+	printk(KERN_INFO "cdd: writing on device\n");
+
 	byte = *buf;
 	return 1;
 }
