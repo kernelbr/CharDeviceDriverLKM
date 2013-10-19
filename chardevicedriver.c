@@ -67,5 +67,5 @@ module_exit(cdd_cleanup);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Kernel BR team");
-MODULE_DESCRIPTION("A hello world module");
+MODULE_DESCRIPTION("char device driver module");
 
