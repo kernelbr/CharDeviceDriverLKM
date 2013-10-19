@@ -1,0 +1,11 @@
+.chardevicedriver.ko.cmd
+.chardevicedriver.mod.o.cmd
+.chardevicedriver.o.cmd
+.tmp_versions/
+Module.symvers
+chardevicedriver.ko
+chardevicedriver.mod.c
+chardevicedriver.mod.o
+chardevicedriver.o
+modules.order
+
