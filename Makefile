@@ -1,11 +1,10 @@
 obj-m	:= chardevicedriver.o
 
-KDIR    := /lib/modules/$(shell uname -r)/build
-PWD    := $(shell pwd)
+KDIR	:= /lib/modules/$(shell uname -r)/build
+PWD	:= $(shell pwd)
 
 default:
 	$(MAKE) -C $(KDIR) SUBDIRS=$(PWD) modules
 
 clean:
-	        rm -f *.ko *.o *.order *.symvers *.mod.c
-
+	rm -f *.ko *.o *.order *.symvers *.mod.c
