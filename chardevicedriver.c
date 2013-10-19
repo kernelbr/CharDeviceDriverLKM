@@ -6,7 +6,7 @@ static char byte;
 
 static int cdd_open(struct inode *, struct file *);
 static int cdd_release(struct inode *, struct file *);
-static ssize_t cdd_write(struct file *, char *, size_t, loff_t *);
+static ssize_t cdd_write(struct file *, const char *, size_t, loff_t *);
 static ssize_t cdd_read(struct file *, char *, size_t, loff_t *);
 
 
@@ -56,7 +56,7 @@ static ssize_t cdd_read(struct file *f, char *buf, size_t len, loff_t *off)
 	else		return 0;
 }
 
-static ssize_t cdd_write(struct file *f, char *buf, size_t len, loff_t *off)
+static ssize_t cdd_write(struct file *f, const char *buf, size_t len, loff_t *off)
 {
 	byte = *buf;
 	return 1;
