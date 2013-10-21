@@ -6,7 +6,6 @@
 #include <asm/uaccess.h>
 #include "chardevicedriver.h"
 
-
 static unsigned int cdd_major = CDD_MAJOR;
 static unsigned int cdd_minor = CDD_MINOR;
 static unsigned int cdd_nr_devs = CDD_NR_DEVS;
@@ -23,13 +22,12 @@ static ssize_t cdd_write(struct file *, const char *, size_t, loff_t *);
 static ssize_t cdd_read(struct file *, char *, size_t, loff_t *);
 
 
-static struct file_operations cdd_fops =
-{
-	.owner		= THIS_MODULE,
-	.read		= cdd_read,
-	.write		= cdd_write,
-	.open		= cdd_open,
-	.release	= cdd_release
+static struct file_operations cdd_fops = {
+	.owner = THIS_MODULE,
+	.read = cdd_read,
+	.write = cdd_write,
+	.open = cdd_open,
+	.release = cdd_release
 };
 
 static void
@@ -73,7 +71,7 @@ cdd_cleanup(void)
 {
 	dev_t dev = MKDEV(cdd_major, cdd_minor);
 	cdev_del(&cdd_cdev);
-        unregister_chrdev_region(dev, cdd_nr_devs);
+	unregister_chrdev_region(dev, cdd_nr_devs);
 	printk(KERN_INFO "cdd: exiting module\n");
 }
 
