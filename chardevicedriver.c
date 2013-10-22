@@ -6,6 +6,7 @@
 #include <asm/uaccess.h>
 #include "chardevicedriver.h"
 
+
 static char cdd_buffer[CDD_MAX_BUFFER+1];
 static unsigned int cdd_major = CDD_MAJOR;
 static unsigned int cdd_minor = CDD_MINOR;
@@ -20,24 +21,24 @@ static int cdd_open(struct inode *, struct file *);
 static int cdd_release(struct inode *, struct file *);
 static ssize_t cdd_write(struct file *, const char *, size_t, loff_t *);
 static ssize_t cdd_read(struct file *, char *, size_t, loff_t *);
-static loff_t cdd_lseek(struct file *filp, loff_t offset, int orig);
 
-static struct file_operations cdd_fops =
-{
-	.owner		= THIS_MODULE,
-	.read		= cdd_read,
-	.write		= cdd_write,
-	.open		= cdd_open,
-	.release	= cdd_release
+static struct file_operations cdd_fops = {
+	.owner = THIS_MODULE,
+	.read = cdd_read,
+	.write = cdd_write,
+	.open = cdd_open,
+	.release = cdd_release
 };
 
 static void
 cdd_setup_cdev(struct cdev *dev)
 {
 	int err, devno = MKDEV(cdd_major, cdd_minor);
+
 	cdev_init(dev, &cdd_fops);
 	dev->owner = THIS_MODULE;
 	dev->ops = &cdd_fops;
+
 	err = cdev_add(dev, devno, 1);
 	if (err)
 		printk(KERN_WARNING "cdd: can't add cdd");
@@ -71,8 +72,10 @@ static void __exit
 cdd_cleanup(void)
 {
 	dev_t dev = MKDEV(cdd_major, cdd_minor);
+
 	cdev_del(&cdd_cdev);
-        unregister_chrdev_region(dev, cdd_nr_devs);
+	unregister_chrdev_region(dev, cdd_nr_devs);
+
 	printk(KERN_INFO "cdd: exiting module\n");
 }
 
