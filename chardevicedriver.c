@@ -111,6 +111,7 @@ cdd_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 	if (nbytes == 0)
 		return 0; /* EOF */
 
+	/* On success, copy_to_user returns 0, nbytes otherwise. */
 	nbytes -= copy_to_user(buff, cdd_buffer + *off, nbytes);
 
 	printk(KERN_INFO "bytes read %d\n", nbytes);
@@ -131,6 +132,7 @@ cdd_write(struct file *filp, const char __user *buff, size_t len, loff_t *off)
 	if (nbytes == 0)
 		return -ENOSPC; /* EOF */
 
+	/* On success, copy_from_user returns 0, nbytes otherwise. */
 	nbytes -= copy_from_user(cdd_buffer + *off, buff, nbytes);
 
 	printk(KERN_INFO "bytes written %d\n", nbytes);
