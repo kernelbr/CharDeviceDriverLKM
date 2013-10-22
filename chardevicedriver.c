@@ -103,13 +103,10 @@ cdd_release(struct inode *inode, struct file *filp)
 static ssize_t
 cdd_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 {
-	int nbytes;
 	const size_t maxsize = CDD_MAX_BUFFER - *off;
+	int nbytes = min(len, maxsize); /* Max number of bytes to read */
 
 	printk(KERN_INFO "cdd: reading from device\n");
-
-	/* Max number of bytes to read */
-	nbytes = min(len, maxsize);
 
 	if (nbytes == 0)
 		return 0; /* EOF */
@@ -126,13 +123,10 @@ cdd_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 static ssize_t
 cdd_write(struct file *filp, const char __user *buff, size_t len, loff_t *off)
 {
-	int nbytes;
 	const size_t maxsize = CDD_MAX_BUFFER - *off;
+	int nbytes = min(len, maxsize); /* Max number of bytes to write */
 
 	printk(KERN_INFO "cdd: writing on device\n");
-
-	/* Max number of bytes to write */
-	nbytes = min(len, maxsize);
 
 	if (nbytes == 0)
 		return -ENOSPC; /* EOF */
