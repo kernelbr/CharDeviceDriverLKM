@@ -65,7 +65,7 @@ cdd_init(void)
 
 	cdd_setup_cdev(&cdd_cdev);
 
-	cdd_buffer = kmalloc(CDD_MAX_BUFFER, GFP_KERNEL);
+	cdd_buffer = kzalloc(CDD_MAX_BUFFER, GFP_KERNEL);
 	if (cdd_buffer == NULL) {
 		printk(KERN_WARNING "cdd: can't allocate memory\n");
 		return -ENOMEM;
@@ -112,7 +112,7 @@ cdd_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 	nbytes = min(len, maxsize);
 
 	if (nbytes == 0)
-		return 0;//-ENOSPC; /* EOF */
+		return 0; /* EOF */
 
 	nbytes -= copy_to_user(buff, cdd_buffer + *off, nbytes);
 
