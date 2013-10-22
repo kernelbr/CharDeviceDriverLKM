@@ -128,7 +128,7 @@ cdd_write(struct file *filp, const char __user *buff, size_t len, loff_t *off)
 	if (nbytes == 0)
 		return -ENOSPC; /* EOF */
 
-	nbytes -= copy_from_user(&cdd_buffer, buff, nbytes);
+	nbytes -= copy_from_user(cdd_buffer + *off, buff, nbytes);
 
 	printk(KERN_INFO "bytes written %d\n", nbytes);
 
