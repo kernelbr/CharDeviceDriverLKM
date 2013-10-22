@@ -7,7 +7,7 @@
 #include "chardevicedriver.h"
 
 
-static char cdd_buffer[CDD_MAX_BUFFER+1];
+static char *cdd_buffer;
 static unsigned int cdd_major = CDD_MAJOR;
 static unsigned int cdd_minor = CDD_MINOR;
 static unsigned int cdd_nr_devs = CDD_NR_DEVS;
@@ -65,6 +65,12 @@ cdd_init(void)
 
 	cdd_setup_cdev(&cdd_cdev);
 
+	cdd_buffer = kmalloc(CDD_MAX_BUFFER, GFP_KERNEL);
+	if (cdd_buffer == NULL) {
+		printk(KERN_WARNING "cdd: can't allocate memory\n");
+		return -ENOMEM;
+	}
+
 	return r;
 }
 
@@ -75,6 +81,7 @@ cdd_cleanup(void)
 
 	cdev_del(&cdd_cdev);
 	unregister_chrdev_region(dev, cdd_nr_devs);
+	kfree(cdd_buffer);
 
 	printk(KERN_INFO "cdd: exiting module\n");
 }
@@ -105,7 +112,7 @@ cdd_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 	nbytes = min(len, maxsize);
 
 	if (nbytes == 0)
-		return -ENOSPC; /* EOF */
+		return 0;//-ENOSPC; /* EOF */
 
 	nbytes -= copy_to_user(buff, cdd_buffer + *off, nbytes);
 
