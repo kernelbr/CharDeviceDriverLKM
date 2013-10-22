@@ -6,11 +6,10 @@
 #include <asm/uaccess.h>
 #include "chardevicedriver.h"
 
-
+static char cdd_buffer[CDD_MAX_BUFFER+1];
 static unsigned int cdd_major = CDD_MAJOR;
 static unsigned int cdd_minor = CDD_MINOR;
 static unsigned int cdd_nr_devs = CDD_NR_DEVS;
-static char cdd_byte;
 struct cdev cdd_cdev;
 
 module_param(cdd_major, uint, S_IRUGO);
@@ -21,7 +20,7 @@ static int cdd_open(struct inode *, struct file *);
 static int cdd_release(struct inode *, struct file *);
 static ssize_t cdd_write(struct file *, const char *, size_t, loff_t *);
 static ssize_t cdd_read(struct file *, char *, size_t, loff_t *);
-
+static loff_t cdd_lseek(struct file *filp, loff_t offset, int orig);
 
 static struct file_operations cdd_fops =
 {
@@ -62,7 +61,7 @@ cdd_init(void)
 		printk(KERN_WARNING "cdd: can't get major %d\n", cdd_major);
 		return r;
 	}
-	
+
 	cdd_setup_cdev(&cdd_cdev);
 
 	return r;
@@ -94,19 +93,45 @@ cdd_release(struct inode *inode, struct file *filp)
 static ssize_t
 cdd_read(struct file *filp, char __user *buff, size_t len, loff_t *off)
 {
+	int nbytes;
+
 	printk(KERN_INFO "cdd: reading from device\n");
-	copy_to_user(buff, &cdd_byte, 1);
-	if (!*off)
- 		return *off += 1;
-	return 0;
+
+	/* Max number of bytes to read */
+	nbytes = CDD_MAX_BUFFER - *off > len ? len : CDD_MAX_BUFFER - *off;
+
+	if (nbytes == 0)
+		return -ENOSPC; /* EOF */
+
+	nbytes -= copy_to_user(buff, cdd_buffer + *off, nbytes);
+
+	printk(KERN_INFO "bytes read %d\n", nbytes);
+
+	*off += nbytes;
+
+	return nbytes;
 }
 
 static ssize_t
 cdd_write(struct file *filp, const char __user *buff, size_t len, loff_t *off)
 {
+	int nbytes;
+
 	printk(KERN_INFO "cdd: writing on device\n");
-	copy_from_user(&cdd_byte, buff, 1);
-	return 1;
+
+	/* Max number of bytes to write */
+	nbytes = CDD_MAX_BUFFER - *off > len ? len : CDD_MAX_BUFFER - *off;
+
+	if (nbytes == 0)
+		return -ENOSPC; /* EOF */
+
+	nbytes -= copy_from_user(&cdd_buffer, buff, nbytes);
+
+	printk(KERN_INFO "bytes written %d\n", nbytes);
+
+	*off += nbytes;
+
+	return nbytes;
 }
 
 module_init(cdd_init);
